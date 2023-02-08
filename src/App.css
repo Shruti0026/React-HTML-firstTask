@@ -1,38 +1,101 @@
-.App {
-  text-align: center;
+body {
+    font-family: Arial;
+    background: linear-gradient(to right, #155799, #159957);
+    color: whitesmoke;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.form {
+    margin-left: 30%;
+    margin-right: 30%;
+    width: 40%;
+    display: block;
+    text-align: left;
+    padding-top: 30px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.fieldset {
+    border: 3px solid #f1f1f1;
+    align-items: center;
+    margin: 10px 10px 10px 10px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="date"],
+input[type="tel"] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
 }
 
-.App-link {
-  color: #61dafb;
+input[type="radio"] {
+    background-color: #ccc;
+    margin: 0;
+    font: inherit;
+    color: currentColor;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    transform: translateY(-0.075em);
+    outline-offset: max(2px, 0.15em);
+    margin: 15px 20px -3px 20px;
+    padding-bottom: 10px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+a {
+    text-align: center;
+    text-size-adjust: 20px;
+    color: white;
+}
+
+button {
+    background-color: #04AA6D;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    opacity: 0.5;
+    color: white;
+    background-color: #014c30;
+}
+
+.registerbtn {
+    background-color: #04AA6D;
+    color: white;
+    padding: 16px 20px;
+    margin: 8px 20px;
+    border: none;
+    cursor: pointer;
+    width: 50%;
+    opacity: 0.9;
+    inline-size: 40%;
+}
+
+.registerbtn:hover {
+    opacity: 1;
+    color: white;
+    background-color: #014c30;
+}
+
+.container {
+    margin-left: 30%;
+    margin-right: 30%;
+    width: 40%;
+    display: block;
+    text-align: left;
+    padding-top: 30px;
+    background-color: #d6f3e8;
+}
+
+h4 {
+    text-align: center;
 }
