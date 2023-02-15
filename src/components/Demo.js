@@ -1,167 +1,185 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableFooter from '@mui/material/TableFooter';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import LastPageIcon from '@mui/icons-material/LastPage';
+import React, { useState, Fragment } from "react";
+import { nanoid } from "nanoid";
+import "./App.css";
+import data from "./mock-data.json";
+import ReadOnlyRow from "./components/ReadOnlyRow";
+import EditableRow from "./components/EditableRow";
 
-function TablePaginationActions(props) {
-  const theme = useTheme();
-  const { count, page, rowsPerPage, onPageChange } = props;
+const App = () => {
+  const [contacts, setContacts] = useState(data);
+  const [addFormData, setAddFormData] = useState({
+    fullName: "",
+    address: "",
+    phoneNumber: "",
+    email: "",
+  });
 
-  const handleFirstPageButtonClick = (event) => {
-    onPageChange(event, 0);
+  const [editFormData, setEditFormData] = useState({
+    fullName: "",
+    address: "",
+    phoneNumber: "",
+    email: "",
+  });
+
+  const [editContactId, setEditContactId] = useState(null);
+
+  const handleAddFormChange = (event) => {
+    event.preventDefault();
+
+    const fieldName = event.target.getAttribute("name");
+    const fieldValue = event.target.value;
+
+    const newFormData = { ...addFormData };
+    newFormData[fieldName] = fieldValue;
+
+    setAddFormData(newFormData);
   };
 
-  const handleBackButtonClick = (event) => {
-    onPageChange(event, page - 1);
+  const handleEditFormChange = (event) => {
+    event.preventDefault();
+
+    const fieldName = event.target.getAttribute("name");
+    const fieldValue = event.target.value;
+
+    const newFormData = { ...editFormData };
+    newFormData[fieldName] = fieldValue;
+ 
+    setEditFormData(newFormData);
   };
 
-  const handleNextButtonClick = (event) => {
-    onPageChange(event, page + 1);
+  const handleAddFormSubmit = (event) => {
+    event.preventDefault();
+
+    const newContact = {
+      id: nanoid(),
+      fullName: addFormData.fullName,
+      address: addFormData.address,
+      phoneNumber: addFormData.phoneNumber,
+      email: addFormData.email,
+    };
+
+    const newContacts = [...contacts, newContact];
+    setContacts(newContacts);
   };
 
-  const handleLastPageButtonClick = (event) => {
-    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  const handleEditFormSubmit = (event) => {
+    event.preventDefault();
+
+    const editedContact = {
+      id: editContactId,
+      fullName: editFormData.fullName,
+      address: editFormData.address,
+      phoneNumber: editFormData.phoneNumber,
+      email: editFormData.email,
+    };
+
+    const newContacts = [...contacts];
+
+    const index = contacts.findIndex((contact) => contact.id === editContactId);
+
+    newContacts[index] = editedContact;
+
+    setContacts(newContacts);
+    setEditContactId(null);
+  };
+
+  const handleEditClick = (event, contact) => {
+    event.preventDefault();
+    setEditContactId(contact.id);
+
+    const formValues = {
+      fullName: contact.fullName,
+      address: contact.address,
+      phoneNumber: contact.phoneNumber,
+      email: contact.email,
+    };
+
+    setEditFormData(formValues);
+  };
+
+  const handleCancelClick = () => {
+    setEditContactId(null);
+  };
+
+  const handleDeleteClick = (contactId) => {
+    const newContacts = [...contacts];
+
+    const index = contacts.findIndex((contact) => contact.id === contactId);
+
+    newContacts.splice(index, 1);
+
+    setContacts(newContacts);
   };
 
   return (
-    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-      <IconButton
-        onClick={handleFirstPageButtonClick}
-        disabled={page === 0}
-        aria-label="first page"
-      >
-        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
-      </IconButton>
-      <IconButton
-        onClick={handleBackButtonClick}
-        disabled={page === 0}
-        aria-label="previous page"
-      >
-        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-      </IconButton>
-      <IconButton
-        onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="next page"
-      >
-        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-      </IconButton>
-      <IconButton
-        onClick={handleLastPageButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="last page"
-      >
-        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
-      </IconButton>
-    </Box>
-  );
-}
+    <div className="app-container">
+      <form onSubmit={handleEditFormSubmit}>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Address</th>
+              <th>Phone Number</th>
+              <th>Email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {contacts.map((contact) => (
+              <Fragment>
+                {editContactId === contact.id ? (
+                  <EditableRow
+                    editFormData={editFormData}
+                    handleEditFormChange={handleEditFormChange}
+                    handleCancelClick={handleCancelClick}
+                  />
+                ) : (
+                  <ReadOnlyRow
+                    contact={contact}
+                    handleEditClick={handleEditClick}
+                    handleDeleteClick={handleDeleteClick}
+                  />
+                )}
+              </Fragment>
+            ))}
+          </tbody>
+        </table>
+      </form>
 
-TablePaginationActions.propTypes = {
-  count: PropTypes.number.isRequired,
-  onPageChange: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired,
+      <h2>Add a Contact</h2>
+      <form onSubmit={handleAddFormSubmit}>
+        <input
+          type="text"
+          name="fullName"
+          required="required"
+          placeholder="Enter a name..."
+          onChange={handleAddFormChange}
+        />
+        <input
+          type="text"
+          name="address"
+          required="required"
+          placeholder="Enter an addres..."
+          onChange={handleAddFormChange}
+        />
+        <input
+          type="text"
+          name="phoneNumber"
+          required="required"
+          placeholder="Enter a phone number..."
+          onChange={handleAddFormChange}
+        />
+        <input
+          type="email"
+          name="email"
+          required="required"
+          placeholder="Enter an email..."
+          onChange={handleAddFormChange}
+        />
+        <button type="submit">Add</button>
+      </form>
+    </div>
+  );
 };
 
-function createData(name, calories, fat) {
-  return { name, calories, fat };
-}
-
-const rows = [
-  createData('Cupcake', 305, 3.7),
-  createData('Donut', 452, 25.0),
-  createData('Eclair', 262, 16.0),
-  createData('Frozen yoghurt', 159, 6.0),
-  createData('Gingerbread', 356, 16.0),
-  createData('Honeycomb', 408, 3.2),
-  createData('Ice cream sandwich', 237, 9.0),
-  createData('Jelly Bean', 375, 0.0),
-  createData('KitKat', 518, 26.0),
-  createData('Lollipop', 392, 0.2),
-  createData('Marshmallow', 318, 0),
-  createData('Nougat', 360, 19.0),
-  createData('Oreo', 437, 18.0),
-].sort((a, b) => (a.calories < b.calories ? -1 : 1));
-
-export default function CustomPaginationActionsTable() {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
-        <TableBody>
-          {(rowsPerPage > 0
-            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : rows
-          ).map((row) => (
-            <TableRow key={row.name}>
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.calories}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.fat}
-              </TableCell>
-            </TableRow>
-          ))}
-
-          {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={6} />
-            </TableRow>
-          )}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={3}
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              SelectProps={{
-                inputProps: {
-                  'aria-label': 'rows per page',
-                },
-                native: true,
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </TableContainer>
-  );
-}
+export default App;
