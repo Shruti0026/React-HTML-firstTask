@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, createContext} from "react";
 import { styled } from '@mui/material/styles'
 import TableBody from '@mui/material/TableBody';
 import Table from '@mui/material/Table';
@@ -15,7 +15,6 @@ import MuiGrid from '@mui/material/Grid';
 import Avatar from '@mui/material/Avatar';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import UpdateIcon from '@mui/icons-material/Update';
-
 
 
 const avatarStyle = { backgroundColor: '#1bbd7e' }
@@ -48,8 +47,9 @@ const Grid = styled(MuiGrid)(({ theme }) => ({
     },
 }));
 
-const TableData=(props)=>{
+export default function TableData({user}){
     const [userData, setUserData] = useState(jsonData);
+    let [bolin,setBolin]=useState(false)
     
 
     const deleteRows = (id) => {
@@ -59,56 +59,48 @@ const TableData=(props)=>{
         setUserData(total)
     }
 
-    const[editData, setEditData]=useState(null);
-    const[editUserId, setEditUserId]= useState(null);
-    // const[editFormData, setEditFormData] = useState({
-    //     name:"",
-    //     email:"",
-    //     register_As:"",
-    //     phone: "",
-    //     password:"",
-    //     confirm_Password:"",
-    // })
+
     
-    //const [userData, setUserData] = useState(jsonData);
+    const[editUserId, setEditUserId]= useState(null);
+    
     const id = userData.id;
     const[editFormData, setEditFormData] = useState();
+    const[editData, setEditData]=useState();
+    
+
 
     const handleEditClick= (id) =>{
         console.log(id, "index to be updated")
-        const newEditItem = userData.map((data ,index)=>{
-           if(index === id){
-            console.log(data,'returned data')
-            setEditFormData(data)
-           } 
-           //setEditData(data)
-           console.log(data,'returned data outside if') 
-           setEditFormData(data)
-         
-        });
-    }
+        var newEditUser = userData.filter((user,index) => index === id);
+        console.log(newEditUser,'indside newedituser'); 
+        setEditData(newEditUser[0])
+        setBolin(true)
+    }; 
+     
 
 
 
-    const tableRows = userData.map((info, id) => {
+
+    const tableRows = userData.map((info, id ) => {
         return ( 
+            
             <StyledTableRow >
                 <StyledTableCell align = "center" > { info.id }</StyledTableCell> 
-                <StyledTableCell align = "center" > { info.name } </StyledTableCell> 
-                <StyledTableCell align = "center" > { info.email } </StyledTableCell> 
-                <StyledTableCell align = "center" > { info.register_As } </StyledTableCell> 
+                <StyledTableCell align = "center" > { info.name  } </StyledTableCell> 
+                <StyledTableCell align = "center" > { info.email  } </StyledTableCell> 
+                <StyledTableCell align = "center" > { info.register_As  } </StyledTableCell> 
                 <StyledTableCell align = "center" > { info.phone } </StyledTableCell> 
                 <StyledTableCell align = "center" > { info.password } </StyledTableCell> 
-                <StyledTableCell align = "center" > { info.confirm_Password } </StyledTableCell> 
+                <StyledTableCell align = "center" > { info.confirm_Password  } </StyledTableCell> 
                 <StyledTableCell onClick = {() => deleteRows(userData.id) } > 
                         <Avatar style = { avatarStyle } >
                         <DeleteForeverIcon/>
                         </Avatar> 
                 </StyledTableCell > 
+                
                
                 <StyledTableCell onClick={()=> handleEditClick(id)} > 
                         < Avatar style = { avatarStyle }>
-                       
                         <UpdateIcon  />
                         </Avatar> 
                 </StyledTableCell> 
@@ -122,10 +114,24 @@ const TableData=(props)=>{
         const updatedUserData = [...userData];
         updatedUserData.push(data);
         setUserData(updatedUserData);
-        //console.log(updatedUserData)
+        
     }
 
+    const editRows =( data )=>{ 
+        console.log(data,'newdata from signup')
+        const editIndex = userData.map((e) => e.id ).indexOf(editData.id);
+        console.log(editIndex,'editindex')
+        const tempData =[...userData]
+        tempData[editIndex] = data
+        setEditUserId(editData.id[0])
+        setUserData(tempData) 
+        setBolin(false)       
+    }
+
+    
+
     return ( 
+
         <Grid container>
             <Grid item xs width = { 600 } marginLeft = { 5 }>
                 <TableContainer component = { Paper } style = {{ margin: 'auto', marginTop: 50 }} >
@@ -149,12 +155,16 @@ const TableData=(props)=>{
             </Grid >
                 <Divider orientation = "vertical" flexItem >
                 </Divider>
-            <Grid item xs width = { 350 }height = { 400 } >
-                <Signup func ={addRows}/> 
+            <Grid item xs width = { 350 }height = { 400 } > 
+                <Signup func ={addRows} userData={userData} editData = {editData} editRows={editRows}/> 
             </Grid >
 
         </Grid>
-    )
-}
 
-export default TableData;
+        
+    );
+
+}
+   
+
+
