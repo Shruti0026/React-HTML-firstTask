@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React,{useEffect, useState} from "react";
 import jsonData from './data.json'
 import { Grid } from "@mui/material";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -13,6 +13,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Avatar from '@mui/material/Avatar';
 import Paper from '@mui/material/Paper';
+import Userdata from './Userdata'
 // import Link from '@mui/material/Link';
 // import Divider from "@mui/material/Divider";
 // import Chip from "@mui/material/Chip";
@@ -28,18 +29,53 @@ import Paper from '@mui/material/Paper';
     const avatarStyle = { backgroundColor: '#1bbd7e' }
     const marginTop = { marginTop: 5 }
     const btnstyle={margin:'8px 0'}
+    
+export default function Signup(props){
+    //console.log('props.editData', props.editData)
+    const [name,setName] = useState(props?.editData?.name ||'');
+    const [email,setEmail] = useState(props?.editData?.email||'');
+    const [register_As, setRegister_As]= useState(props?.editData?.register_As||'');
+    const [phone,setPhone] = useState( props?.editData?.phone || '');
+    const [password,setPassword] = useState(props?.editData?.password||'');
+    const [confirm_Password,setConfirmPassword] = useState(props?.editData?.confirm_Password||'');
+    
+    const [userData, setUserData] = useState(jsonData);
+    let [bolin,setBolin]=useState(false)
 
     
+
+    useEffect(()=>{setPhone(props?.editData?.phone)},[props.editData])
+    useEffect(()=>{setName(props?.editData?.name)},[props.editData])
+    useEffect(()=>{setEmail(props?.editData?.email)},[props.editData])
+    useEffect(()=>{setRegister_As(props?.editData?.register_As)},[props.editData])
+    useEffect(()=>{setPassword(props?.editData?.password)},[props.editData])
+    useEffect(()=>{setConfirmPassword(props?.editData?.confirm_Password)},[props.editData]) 
     
-function Signup(props){
-    const [name,setName] = useState('');
-    const [email,setEmail] = useState('');
-    const [register_As, setRegister_As]= useState('');
-    const [phone,setPhone] = useState('');
-    const [password,setPassword] = useState('');
-    const [confirm_Password,setConfirmPassword] = useState('');
-    //const [userData, setUserData] = useState(jsonData);
-        
+    
+    //console.log(editId);
+    const[editUserId, setEditUserId]= useState();
+   
+    
+    const[editFormData, setEditFormData] = useState();
+    const handleClick=(index)=>{
+        const editId = props.editData.id;
+        console.log(editId)
+        setBolin(true)
+        const newData={
+            id: editId,
+            name: name,
+            email: email,
+            register_As: register_As,
+            phone: phone,
+            password: password,
+            confirm_Password: confirm_Password,
+
+        } 
+        console.log(newData,'inside newdata concole')
+        props.editRows(newData);    
+    }
+
+    
     const changeName=(event)=>{
         setName(event.target.value);
     };
@@ -87,11 +123,8 @@ function Signup(props){
         setConfirmPassword('');
     };
 
-    const[editData, setEditData]=useState(null);
-    const updateRows=(id)=>{
-        
 
-    }
+    
 
 
     return (
@@ -159,7 +192,17 @@ function Signup(props){
                     control={<Checkbox name="checkedA" />}
                     label="I accept the terms and conditions."
                 />
-                <Button type='submit' variant='contained' color='primary' onClick={transferValue} style={btnstyle} fullWidth>Sign up</Button>
+                <Button type='submit' variant='contained' color='primary' 
+                        onClick={transferValue}
+                style={btnstyle} fullWidth>Sign up</Button>
+                <Button type='submit' variant='contained' color='primary' 
+                        onClick={handleClick}
+                style={btnstyle} fullWidth>Update</Button>
+               
+                
+            
+            
+                    
                     {/* <Divider >
                         <Chip  label="OR" />
                     </Divider>onClick={transferValue}
@@ -187,5 +230,5 @@ function Signup(props){
 }
 
 
-export default Signup ;
+//export default Signup ;
 
